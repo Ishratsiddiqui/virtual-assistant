@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shifra, My Virtual Assistant</title>
+  <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI6dDsOj7zVQQY5Fak1ynM4CX69-taAizH4Q&s" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+  <style>
+     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Roboto+Condensed:wght@400;700&display=swap');
+
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      width: 100%;
+      height: 100vh;
+      background-color: black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    #logo {
+      width: 20vw;
+    }
+
+    h1 {
+      color: #fff;
+      font-family: "Roboto Condensed", sans-serif;
+      text-align: center;
+    }
+
+    #name {
+      color: rgb(80, 144, 201);
+      font-size: 40px;
+    }
+
+    #va {
+      color: rgb(34, 71, 104);
+      font-size: 40px;
+    }
+
+    #voice {
+      width: 150px;
+      display: none;
+    }
+
+    #btn {
+      width: 30%;
+      background: linear-gradient(to right, rgb(112, 169, 207), rgb(63, 20, 50));
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 20px;
+      border-radius: 20px;
+      border: none;
+      color: #fff;
+      box-shadow: 2px 2px 10px rgb(15, 66, 100), 2px 2px 10px rgb(168, 62, 136);
+      transition: all 0.5s;
+      cursor: pointer;
+    }
+
+    #btn:hover {
+      box-shadow: 2px 2px 20px rgb(15, 66, 100), 2px 2px 20px rgb(168, 62, 136);
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <img src="https://images.stockcake.com/public/9/a/d/9ad4f95a-677e-49f5-85af-e24f50ea7b32_large/glowing-robot-intelligence-stockcake.jpg" alt="logo" id="logo" />
+  <h1>I'm <span id="name">Shifra</span>, your <span id="va">Virtual Assistant</span></h1>
+  <img src="https://mir-s3-cdn-cf.behance.net/project_modules/hd/f4020f114494633.603cbcc781296.gif" alt="voice" id="voice" />
+  <button id="btn"><i class="fa-solid fa-microphone"></i><span id="content">Click here to talk to me</span></button>
+
+  <script>
+    const btn = document.querySelector("#btn");
+    const content = document.querySelector("#content");
+    const voice = document.querySelector("#voice");
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      utterance.lang = "en-GB";
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function wishMe() {
+      const hour = new Date().getHours();
+      if (hour >= 0 && hour < 12) {
+        speak("Good Morning Miss");
+      } else if (hour >= 12 && hour < 16) {
+        speak("Good Afternoon Miss");
+      } else {
+        speak("Good Evening Miss");
+      } 
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[event.resultIndex][0].transcript;
+      content.innerText = transcript;
+      takeCommand(transcript.toLowerCase());
+    };
+
+    btn.addEventListener("click", () => {
+      recognition.start();
+      btn.style.display = "none";
+      voice.style.display = "block";
+    });
+
+    function takeCommand(message) {
+      btn.style.display = "flex";
+      voice.style.display = "none";
+
+      if (message.includes("hello") || message.includes("hey")) {
+        speak("Hello Miss, what can I help you with?");
+      } else if (message.includes("who are you")) {
+        speak("I am your virtual assistant, created by Ishrat Siddiqui.");
+      } else if (message.includes("open youtube")) {
+        speak("Opening YouTube...");
+        window.open("https://www.youtube.com/", "_blank");
+      } else if (message.includes("open google")) {
+        speak("Opening Google...");
+        window.open("https://www.google.com/", "_blank");
+      } else if (message.includes("open facebook")) {
+        speak("Opening Facebook...");
+        window.open("https://www.facebook.com/", "_blank");
+      } else if (message.includes("open instagram")) {
+        speak("Opening Instagram...");
+        window.open("https://www.instagram.com/", "_blank");
+      } else if (message.includes("open calculator")) {
+        speak("Opening calculator...");
+        window.open("calculator://");
+      } else if (message.includes("open whatsapp")) {
+        speak("Opening WhatsApp...");
+        window.open("whatsapp://");
+      } else if (message.includes("time")) {
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        speak("The time is " + time);
+      } else if (message.includes("date")) {
+        const date = new Date().toLocaleDateString([], { day: 'numeric', month: 'long' });
+        speak("Today's date is " + date);
+      } else {
+        const cleanedMessage = message.replace("shifra", "").replace("shipra", "");
+        speak("This is what I found on the internet regarding " + cleanedMessage);
+        window.open(`https://www.google.com/search?q=${cleanedMessage}`, "_blank");
+      }
+    }
+
+    // Optional: Uncomment to greet on page load
+
+    window.addEventListener("load", wishMe);
+  </script>
+</body>
+</html>
